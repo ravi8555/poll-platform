@@ -283,7 +283,7 @@ Push to the branch (git push origin feature/amazing-feature)
 
 Open a Pull Request
 
-📝 License
+#📝 License
 MIT License - see LICENSE file for details
 
 👏 Acknowledgments

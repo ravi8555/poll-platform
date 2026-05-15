@@ -1,6 +1,6 @@
 // backend/src/config/database.ts
 import mongoose from 'mongoose';
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 
 let isConnected = false;
 

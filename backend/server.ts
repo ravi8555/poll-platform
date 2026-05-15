@@ -37,7 +37,8 @@ import { notFound } from './src/middleware/notFound';
 import { apiRateLimiter } from './src/middleware/rateLimiter';
 
 // Initialize express app
-const app: Application = express();
+// const app: Application = express();
+const app = express();
 app.use(cookieParser())
 const httpServer = createServer(app);
 const io = new SocketServer(httpServer, {

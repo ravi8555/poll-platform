@@ -286,7 +286,7 @@ declare module 'express-session' {
 }
 
 // OIDC Login
-export const oidcLogin = (req: Request, res: Response) => {
+export const oidcLogin = async (req: Request, res: Response) => {
   const issuer = process.env.OIDC_ISSUER;
   const clientId = process.env.OIDC_CLIENT_ID;
   const redirectUri = process.env.OIDC_REDIRECT_URI;
@@ -300,8 +300,10 @@ export const oidcLogin = (req: Request, res: Response) => {
   req.session.oidcState = state;
   req.session.oidcCodeVerifier = codeVerifier;
   
+  await oidcService.loadOIDCConfig();
   // Build authorization URL
-  const authUrl = `${issuer}/o/authenticate?` + new URLSearchParams({
+  // const authUrl = `${issuer}/o/authenticate?` + new URLSearchParams({
+  const authUrl = `${oidcService.config.authorization_endpoint}?` + new URLSearchParams({
     client_id: clientId!,
     redirect_uri: redirectUri!,
     response_type: 'code',

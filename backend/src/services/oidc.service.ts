@@ -154,6 +154,7 @@
 // backend/src/services/oidc.service.ts
 import { createRemoteJWKSet, jwtVerify, decodeJwt } from 'jose';
 import crypto from 'crypto';
+import { log } from 'console';
 
 interface TokenResponse {
   access_token?: string;
@@ -203,47 +204,163 @@ class OIDCService {
     }
   }
 
-  async exchangeCodeForTokens(code: string, redirectUri: string, codeVerifier: string): Promise<any> {
-    const tokenEndpoint = 'https://auth.portfoliohub.in/o/token';
-    const clientId = process.env.OIDC_CLIENT_ID;
-    const clientSecret = process.env.OIDC_CLIENT_SECRET;
+//   async exchangeCodeForTokens(code: string, redirectUri: string, codeVerifier: string): Promise<any> {
 
-    console.log('🔄 Exchanging code for tokens...');
+//     if (!this.config) {
+//     await this.loadOIDCConfig();
+//   }
     
-    // Build request body according to provider's expected format
-    const params = new URLSearchParams();
-    params.append('grant_type', 'authorization_code');
-    params.append('code', code);
-    params.append('redirect_uri', redirectUri);
-    params.append('client_id', clientId!);
-    params.append('client_secret', clientSecret!);
-    params.append('code_verifier', codeVerifier);
+//     // const tokenEndpoint = 'https://auth.portfoliohub.in/o/token';
 
-    const response = await fetch(tokenEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: params,
-    });
+//     const tokenEndpoint = this.config.token_endpoint;
+//     const clientId = process.env.OIDC_CLIENT_ID;
+//     // const clientSecret = process.env.OIDC_CLIENT_SECRET;
 
-    const responseText = await response.text();
-    console.log('Token response status:', response.status);
+//     const params = new URLSearchParams({
+//     grant_type: 'authorization_code',
+//     code,
+//     redirect_uri: redirectUri,
+//     client_id: process.env.OIDC_CLIENT_ID!,
+//     client_secret: process.env.OIDC_CLIENT_SECRET!,
+//     code_verifier: codeVerifier,
+//   });
+
+//   const credentials = Buffer.from(
+//   `${process.env.OIDC_CLIENT_ID}:${process.env.OIDC_CLIENT_SECRET}`
+// ).toString('base64');
+
+//   // const response = await fetch(tokenEndpoint, {
+//   //   method: 'POST',
+//   //   headers: {
+//   //     'Content-Type': 'application/x-www-form-urlencoded',
+//   //   },
+//   //   body: params.toString(),
+//   // });
+
+//   console.log({
+//   code,
+//   redirectUri,
+//   codeVerifier,
+//   clientId,
+// });
+// console.log("====================>");
+
+// console.log({
+//   clientId: process.env.OIDC_CLIENT_ID,
+//   clientSecret: process.env.OIDC_CLIENT_SECRET
+// });
+//   const response = await fetch(tokenEndpoint, {
     
-    if (!response.ok) {
-      console.error('Token exchange failed:', responseText);
-      throw new Error(`Token exchange failed: ${response.status}`);
-    }
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/x-www-form-urlencoded',
+//     Authorization: `Basic ${credentials}`,
+//   },
+//   body: new URLSearchParams({
+//     grant_type: 'authorization_code',
+//     code,
+//     redirect_uri: redirectUri,
+//     code_verifier: codeVerifier,
+//   }),
+// });
 
-    const tokens = JSON.parse(responseText);
-    console.log('Token exchange response:', tokens);
+//   const text = await response.text();
+
+//   if (!response.ok) {
+//     throw new Error(`Token exchange failed: ${text}`);
+//   }
+
+//   console.log('Token endpoint:', tokenEndpoint);
+//   console.log('Response body:', text);
+
+//   return JSON.parse(text);
+
+//     console.log('🔄 Exchanging code for tokens...');
     
-    return tokens;
+//     // Build request body according to provider's expected format
+//     // const params = new URLSearchParams();
+//     // params.append('grant_type', 'authorization_code');
+//     // params.append('code', code);
+//     // params.append('redirect_uri', redirectUri);
+//     // params.append('client_id', clientId!);
+//     // params.append('client_secret', clientSecret!);
+//     // params.append('code_verifier', codeVerifier);
+
+//     // const response = await fetch(tokenEndpoint, {
+//     //   method: 'POST',
+//     //   headers: {
+//     //     'Content-Type': 'application/x-www-form-urlencoded',
+//     //   },
+//     //   body: params,
+//     // });
+
+//     // const responseText = await response.text();
+//     // console.log('Token response status:', response.status);
+    
+//     // if (!response.ok) {
+//     //   console.error('Token exchange failed:', responseText);
+//     //   throw new Error(`Token exchange failed: ${response.status}`);
+//     // }
+
+//     // const tokens = JSON.parse(responseText);
+//     // console.log('Token exchange response:', tokens);
+    
+//     // return tokens;
+
+
+    
+
+//   }
+
+async exchangeCodeForTokens(
+  code: string,
+  redirectUri: string,
+  codeVerifier: string
+) {
+  const tokenEndpoint = 'http://localhost:3000/o/token';
+  // const tokenEndpoint = `${process.env.OIDC_ISSUER}/o/token'`;
+
+  const clientId = process.env.OIDC_CLIENT_ID!;
+  const clientSecret = process.env.OIDC_CLIENT_SECRET!;
+
+  const params = new URLSearchParams({
+    grant_type: 'authorization_code',
+    code,
+    redirect_uri: redirectUri,
+    client_id: clientId,
+    client_secret: clientSecret,
+    code_verifier: codeVerifier,
+  });
+
+  console.log("REQUEST BODY:", params.toString());
+
+  const response = await fetch(tokenEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: params.toString(),
+  });
+
+  const text = await response.text();
+
+  console.log("TOKEN RESPONSE:", text);
+
+  if (!response.ok) {
+    throw new Error(`Token exchange failed: ${text}`);
   }
 
+  return JSON.parse(text);
+}
+
   async getUserInfo(accessToken: string): Promise<any> {
+
+    if(!this.config){
+      await this.loadOIDCConfig()
+    }
     try {
-      const response = await fetch('https://auth.portfoliohub.in/o/userinfo', {
+      const response = await fetch(`${this.config.userinfo_endpoint}`, {
+        
         headers: {
           'Authorization': `Bearer ${accessToken}`,
         },

@@ -1,91 +1,3 @@
-// // frontend/src/services/socketService.ts
-// import { io, Socket } from 'socket.io-client'; // Correct import
-
-// class SocketService {
-//   private socket: Socket | null = null;
-//   private listeners: Map<string, Function[]> = new Map();
-
-//   connect(token?: string) {
-//     const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
-    
-//     this.socket = io(SOCKET_URL, {
-//       auth: { token },
-//       withCredentials: true,
-//       transports: ['websocket', 'polling'],
-//     });
-
-//     this.socket.on('connect', () => {
-//       console.log('Socket connected:', this.socket?.id);
-//     });
-
-//     this.socket.on('connect_error', (error) => {
-//       console.log('Socket connection error:', error);
-//     });
-
-//     this.socket.on('disconnect', () => {
-//       console.log('Socket disconnected');
-//     });
-
-//     this.socket.on('response-count-update', (data) => {
-//       this.emitToListeners('response-count-update', data);
-//     });
-
-//     this.socket.on('analytics-update', (data) => {
-//       this.emitToListeners('analytics-update', data);
-//     });
-//   }
-
-//   joinPollRoom(pollId: string) {
-//     if (this.socket) {
-//       this.socket.emit('join-poll', pollId);
-//     }
-//   }
-
-//   leavePollRoom(pollId: string) {
-//     if (this.socket) {
-//       this.socket.emit('leave-poll', pollId);
-//     }
-//   }
-
-//   on(event: string, callback: Function) {
-//     if (!this.listeners.has(event)) {
-//       this.listeners.set(event, []);
-//     }
-//     this.listeners.get(event)?.push(callback);
-//   }
-
-//   off(event: string, callback: Function) {
-//     const callbacks = this.listeners.get(event);
-//     if (callbacks) {
-//       const index = callbacks.indexOf(callback);
-//       if (index !== -1) callbacks.splice(index, 1);
-//     }
-//   }
-
-//   private emitToListeners(event: string, data: any) {
-//     const callbacks = this.listeners.get(event);
-//     if (callbacks) {
-//       callbacks.forEach(callback => callback(data));
-//     }
-//   }
-
-//   disconnect() {
-//     if (this.socket) {
-//       this.socket.disconnect();
-//       this.socket = null;
-//     }
-//   }
-
-//   isConnected(): boolean {
-//   return this.socket?.connected || false;
-// }
-// }
-
-// export const socketService = new SocketService();
-
-
-
-
 // frontend/src/services/socketService.ts
 import { io, Socket } from 'socket.io-client';
 
@@ -105,6 +17,7 @@ class SocketService {
   }
 
   connect(token?: string) {
+    
     if (this.socket?.connected) {
       console.log('Socket already connected');
       return;
