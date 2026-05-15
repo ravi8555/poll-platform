@@ -1,38 +1,60 @@
 # Poll Platform - Full Stack Poll Creation & Analytics System
 
-A complete full-stack platform for creating polls, collecting responses, and analyzing results in real-time with WebSocket live updates and SSO support.
+A full-stack real-time poll management platform that allows users to create polls, share them with respondents, collect live responses, and visualize results instantly.
 
+The platform includes secure authentication (Local + OIDC), WebSocket-powered live updates, real-time vote tracking, and an admin dashboard for poll management.
 
-## ✨ Features
+---
 
-### For Poll Creators
-- ✅ **User Authentication** - Secure login/register with JWT and HTTP-only cookies
-- ✅ **SSO Login** - Single Sign-On with OIDC provider
-- ✅ **Poll Creation** - Create polls with multiple questions and options
-- ✅ **Question Management** - Add/remove questions, mark as mandatory/optional
-- ✅ **Response Mode** - Choose between anonymous or authenticated responses
-- ✅ **Expiry System** - Set expiration date for polls
-- ✅ **Real-time Analytics** - Live response updates without page refresh
-- ✅ **Analytics Dashboard** - View response statistics with charts
-- ✅ **CSV Export** - Download response data as CSV
-- ✅ **Publish Results** - Make poll results publicly available
+## Features
 
-### For Respondents
-- ✅ **Public Poll Form** - Easy to use interface for submitting responses
-- ✅ **Mandatory Validation** - Ensures all required questions are answered
-- ✅ **Authentication Support** - Login required for authenticated polls
-- ✅ **SSO Login for Responses** - Use corporate credentials to respond
-- ✅ **Thank You Page** - Confirmation after successful submission
+### Authentication
+- User registration and login
+- JWT-based authentication
+- Secure session management
+- OIDC / OAuth 2.0 login integration
+- Protected routes
+- Logout functionality
 
-### Security & Authentication
-- ✅ **OIDC SSO Integration** - Single Sign-On with OpenID Connect
-- ✅ **HTTP-only Cookies** - Secure authentication (no localStorage)
-- ✅ **JWT Token Validation** - Stateless authentication
-- ✅ **PKCE Flow** - Proof Key for Code Exchange for enhanced security
-- ✅ **JWKS Validation** - JSON Web Key Set for token verification
+### Poll Management
+- Create polls
+- Edit existing polls
+- Delete polls
+- View poll details
+- Publish / share polls
+- Manage poll lifecycle
 
-## 🛠️ Tech Stack
+### Real-Time Polling
+- Live response collection
+- Instant vote updates using Socket.IO
+- Real-time result synchronization
+- Auto-refresh dashboard stats
+- Multiple participant support
 
+### Dashboard
+- View all created polls
+- Poll analytics
+- Response counts
+- Active / completed poll tracking
+- Detailed poll insights
+
+### Respondent Experience
+- Join poll via shared link
+- Submit responses instantly
+- Real-time submission feedback
+- Seamless voting experience
+
+### Security
+- JWT authentication
+- OIDC authentication support
+- PKCE flow implementation
+- Secure cookie handling
+- Input validation
+- Protected backend APIs
+
+---
+
+## Tech Stack
 ### Backend
 - **Runtime**: Node.js
 - **Framework**: Express.js
@@ -54,7 +76,115 @@ A complete full-stack platform for creating polls, collecting responses, and ana
 - **Forms**: React Hook Form + Zod
 - **Routing**: React Router v6
 
-## 🔐 OIDC SSO Configuration
+
+
+### Database
+- MongoDB
+- Mongoose
+
+### Authentication
+- Local Authentication
+- OIDC / OAuth 2.0
+- PKCE
+- JWKS validation
+
+---
+
+## Project Structure
+
+```bash
+poll-platform/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   ├── types/
+│   │   └── utils/
+│   │
+│   ├── public/
+│   └── package.json
+│
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── sockets/
+│   │   ├── utils/
+│   │   └── config/
+│   │
+│   └── package.json
+│
+└── README.md
+
+```
+
+Installation
+Clone Repository
+git clone https://github.com/ravi8555/poll-platforml
+cd poll-platform
+Backend Setup
+
+Navigate to backend:
+
+cd backend
+
+Install dependencies:
+
+npm install
+
+Create .env file:
+
+PORT=5001
+NODE_ENV=development
+
+MONGODB_URI=mongodb://localhost:27017/poll-platform
+
+JWT_SECRET=your_jwt_secret
+SESSION_SECRET=your_session_secret
+
+FRONTEND_URL=http://localhost:5173
+
+# OIDC Configuration
+OIDC_ISSUER=https://auth.portfoliohub.in
+https://auth.portfoliohub.in
+OIDC_CLIENT_ID=9c54497ec7e0814d49942d898b7c1114
+OIDC_CLIENT_SECRET=36b7529cfe185bfcbbe7fb150a22b2e79eef7201d32f95898029b95dedbf7af1
+OIDC_REDIRECT_URI=http://localhost:5001/api/auth/oidc/callback
+OIDC_POST_LOGOUT_REDIRECT_URI=http://localhost:5173/login
+OIDC_SCOPES=openid profile email
+
+
+Run backend:
+
+npm run dev
+Frontend Setup
+
+Navigate to frontend:
+
+cd frontend
+
+Install dependencies:
+
+npm install
+
+Create .env file:
+
+VITE_API_URL=http://localhost:5001/api
+
+### Run frontend:
+npm run dev
+
+## OIDC Authentication Flow
+
+
+The platform supports OpenID Connect authentication using Authorization Code Flow with PKCE.
+
 
 ### What is OIDC SSO?
 
@@ -69,232 +199,69 @@ OpenID Connect (OIDC) is an authentication layer on top of OAuth 2.0 that allows
 5. Backend exchanges code for tokens
 6. User is automatically logged in to Poll Platform
 
-### OIDC Configuration
 
-Add these environment variables to your `.env` file:
+## API Endpoints
+### Authentication
 
-```env
-# OIDC Configuration
-OIDC_ISSUER=https://your-oidc-provider.com
-OIDC_CLIENT_ID=your-client-id
-OIDC_CLIENT_SECRET=your-client-secret
-OIDC_REDIRECT_URI=http://localhost:5001/api/auth/oidc/callback
-OIDC_POST_LOGOUT_REDIRECT_URI=http://localhost:5173/login
-OIDC_SCOPES=openid profile email
-```
-```bash
-OIDC Endpoints
-Endpoint	Description
-GET /api/auth/oidc/login	Initiate SSO login
-GET /api/auth/oidc/callback	OIDC callback handler
-GET /api/auth/oidc/status	Check OIDC configuration status
-Testing OIDC Locally
-Register your application with OIDC provider
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+GET  /api/auth/me
+GET  /api/auth/oidc/login
+GET  /api/auth/oidc/callback
+GET  /api/auth/oidc/status
 
-Add redirect URI: http://localhost:5001/api/auth/oidc/callback
-
-Configure environment variables
-
-Restart the backend server
-
-Click "Sign in with SSO" on login page
-
-Security Features
-PKCE (Proof Key for Code Exchange) - Prevents authorization code interception
-
-State Parameter - CSRF protection
-
-Nonce Validation - Replay attack prevention
-
-JWKS Validation - Cryptographic token verification
-
-HTTP-only Cookies - XSS protection
-```
-📋 Prerequisites
-Node.js (v18 or higher)
-
-MongoDB (local or Atlas)
-
-npm or yarn
-
-OIDC provider account (for SSO)
-
-🔧 Installation
-1. Clone the repository
-bash
-
-git clone https://github.com/ravi8555/poll-platform.git
-cd poll-platform
-
-
-##2. Backend Setup
-bash
-cd backend
-npm install
-Create a .env file in the backend directory:
-
-env
-# Server
-PORT=5001
-NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
-
-# Database
-MONGODB_URI=mongodb://localhost:27017/poll-platform
-
-# JWT & Session
-JWT_SECRET=your-super-secret-jwt-key-change-this
-SESSION_SECRET=your-session-secret-key-change-this
-
-# OIDC SSO Configuration (Optional - remove if not using SSO)
-OIDC_ISSUER=https://your-oidc-provider.com
-OIDC_CLIENT_ID=your-client-id
-OIDC_CLIENT_SECRET=your-client-secret
-OIDC_REDIRECT_URI=http://localhost:5001/api/auth/oidc/callback
-OIDC_POST_LOGOUT_REDIRECT_URI=http://localhost:5173/login
-OIDC_SCOPES=openid profile email
-Start the backend server:
-
-bash
-npm run dev
-3. Frontend Setup
-bash
-cd frontend
-npm install
-Create a .env file in the frontend directory:
-
-env
-VITE_API_URL=http://localhost:5001/api
-VITE_SOCKET_URL=http://localhost:5001
-Start the frontend development server:
-
-bash
-npm run dev
-4. Access the Application
-Frontend: http://localhost:5173
-
-Backend API: http://localhost:5001
-
-Health Check: http://localhost:5001/health
-
-OIDC Status: http://localhost:5001/api/auth/oidc/status
-
-🎯 API Endpoints
-Authentication (Local)
-Method	Endpoint	Description
-POST	/api/auth/register	Register new user
-POST	/api/auth/login	Login user
-GET	/api/auth/me	Get current user
-POST	/api/auth/logout	Logout user
-Authentication (OIDC SSO)
-Method	Endpoint	Description
-GET	/api/auth/oidc/login	Initiate SSO login
-GET	/api/auth/oidc/callback	OIDC callback handler
-GET	/api/auth/oidc/status	Check OIDC configuration
-GET	/api/auth/token	Get WebSocket token
-
-Polls
-
-Method	Endpoint	Description
-POST	/api/polls	Create a new poll
-GET	/api/polls/my-polls	Get user's polls
-GET	/api/polls/:id	Get poll by ID
-PUT	/api/polls/:id	Update poll
-DELETE	/api/polls/:id	Delete poll
+### Polls
+GET    /api/polls
+GET    /api/polls/:id
+POST   /api/polls
+PUT    /api/polls/:id
+DELETE /api/polls/:id
 Responses
-Method	Endpoint	Description
-POST	/api/responses/submit	Submit poll response
-GET	/api/responses/poll/:link	Get poll by shareable link
-GET	/api/responses/poll/:pollId/responses	Get all responses
-Analytics
-Method	Endpoint	Description
-GET	/api/analytics/poll/:pollId	Get poll analytics
-GET	/api/analytics/public/:shareableLink	Get public results
-POST	/api/analytics/poll/:pollId/publish	Publish/unpublish results
-GET	/api/analytics/poll/:pollId/export	Export CSV
-🔌 WebSocket Events
-Client to Server
-Event	Description
-join-poll	Join a poll room for live updates
-leave-poll	Leave a poll room
-Server to Client
-Event	Description
-response-count-update	Live response count update
-analytics-update	Analytics data update
-connection-confirmed	WebSocket connection confirmation
-🚀 Deployment
-Backend Deployment (Render/Railway)
-Push code to GitHub
+POST /api/responses
+GET  /api/responses/:pollId
 
-Create a new Web Service on Render
+### WebSocket Events
+Client Events
+client:join-poll
+client:submit-response
+client:leave-poll
 
-Connect your repository
+### Server Events
+server:poll-updated
+server:new-response
+server:results-updated
 
-Set build command: npm install && npm run build
+### Authentication Architecture
+Local Auth
+Email / Password login
+JWT generation
+Secure cookie storage
+OIDC Auth
 
-Set start command: npm start
+### Authorization Code Flow
+PKCE challenge / verifier
+Token exchange
+UserInfo endpoint integration
+Internal session creation
+Development Notes
 
-Add environment variables (including OIDC config if using SSO)
+For local development:
 
-Frontend Deployment (Vercel/Netlify)
-Push code to GitHub
+secure=false
+sameSite=lax
 
-Import project to Vercel
+For production:
 
-Set build command: npm run build
+secure=true
+sameSite=none
 
-Set output directory: dist
+## Author
 
-Add environment variable: VITE_API_URL (your deployed backend URL)
+Ravindra Dhadave
 
-Database (MongoDB Atlas)
-Create a free cluster on MongoDB Atlas
+Frontend Developer | Full Stack Developer
 
-Get connection string
+License
 
-Add to backend environment variables
-
-
-🔒 Security Best Practices
-Always use HTTPS in production
-
-Store secrets in environment variables
-
-Enable rate limiting for API endpoints
-
-Use HTTP-only cookies for tokens
-
-Implement CSRF protection
-
-Validate all user inputs
-
-Keep dependencies updated
-
-Use OIDC with PKCE for SSO
-
-🤝 Contributing
-Fork the repository
-
-Create your feature branch (git checkout -b feature/amazing-feature)
-
-Commit your changes (git commit -m 'Add some amazing feature')
-
-Push to the branch (git push origin feature/amazing-feature)
-
-Open a Pull Request
-
-#📝 License
-MIT License - see LICENSE file for details
-
-👏 Acknowledgments
-React
-
-Express.js
-
-MongoDB
-
-Tailwind CSS
-
-Socket.io
-
-OpenID Connect
+This project is licensed under the MIT License.

@@ -317,8 +317,8 @@ async exchangeCodeForTokens(
   redirectUri: string,
   codeVerifier: string
 ) {
-  const tokenEndpoint = 'http://localhost:3000/o/token';
-  // const tokenEndpoint = `${process.env.OIDC_ISSUER}/o/token'`;
+  const tokenEndpoint = 'https://auth.portfoliohub.in/o/token';
+  // const tokenEndpoint = 'http://localhost:3000/o/token';
 
   const clientId = process.env.OIDC_CLIENT_ID!;
   const clientSecret = process.env.OIDC_CLIENT_SECRET!;
