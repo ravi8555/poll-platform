@@ -47,49 +47,78 @@ export const AnalyticsPage: React.FC = () => {
     }
   }, [pollId]);
 
+  // useEffect(() => {
+  //   const setupSocket = async () => {
+  //     if (pollId && user) {
+  //       const token = await getWebSocketToken();
+  //       if (token) {
+  //         socketService.connect(token);
+  //         socketService.joinPollRoom(pollId);
+          
+  //         // Create the handler function
+  //         const handleResponseUpdate = (data: any) => {
+  //           if (data.pollId === pollId) {
+  //             console.log('Live update - refreshing analytics');
+  //             fetchAnalytics();
+  //             setLastUpdated(new Date());
+  //             setIsLive(true);
+  //             toast.success('New response received!', { duration: 2000 });
+  //             setTimeout(() => setIsLive(false), 3000);
+  //           }
+  //         };
+          
+  //         // Store reference for cleanup
+  //         responseUpdateRef.current = handleResponseUpdate;
+          
+  //         // Register listener
+  //         socketService.on('response-count-update', handleResponseUpdate);
+  //       }
+  //     }
+  //   };
+    
+  //   setupSocket();
+    
+  //   return () => {
+  //     // Cleanup: remove the specific listener
+  //     if (responseUpdateRef.current) {
+  //       socketService.off('response-count-update', responseUpdateRef.current);
+  //       responseUpdateRef.current = null;
+  //     }
+  //     if (pollId) {
+  //       socketService.leavePollRoom(pollId);
+  //     }
+  //     socketService.disconnect();
+  //   };
+  // }, [pollId, user, getWebSocketToken]);
+
   useEffect(() => {
+ 
     const setupSocket = async () => {
-      if (pollId && user) {
-        const token = await getWebSocketToken();
-        if (token) {
-          socketService.connect(token);
-          socketService.joinPollRoom(pollId);
-          
-          // Create the handler function
-          const handleResponseUpdate = (data: any) => {
-            if (data.pollId === pollId) {
-              console.log('Live update - refreshing analytics');
-              fetchAnalytics();
-              setLastUpdated(new Date());
-              setIsLive(true);
-              toast.success('New response received!', { duration: 2000 });
-              setTimeout(() => setIsLive(false), 3000);
-            }
-          };
-          
-          // Store reference for cleanup
-          responseUpdateRef.current = handleResponseUpdate;
-          
-          // Register listener
-          socketService.on('response-count-update', handleResponseUpdate);
-        }
+    if (!pollId) return;
+    
+
+    const token = await getWebSocketToken();
+
+    await socketService.connect(token);
+
+    socketService.joinPollRoom(pollId);
+
+    const handleAnalyticsUpdate = async (data: any) => {
+      if (data.pollId === pollId) {
+        await fetchAnalytics();
       }
     };
-    
-    setupSocket();
-    
+
+    socketService.on('analytics-update', handleAnalyticsUpdate);
+
     return () => {
-      // Cleanup: remove the specific listener
-      if (responseUpdateRef.current) {
-        socketService.off('response-count-update', responseUpdateRef.current);
-        responseUpdateRef.current = null;
-      }
-      if (pollId) {
-        socketService.leavePollRoom(pollId);
-      }
-      socketService.disconnect();
+      socketService.off('analytics-update', handleAnalyticsUpdate);
+      socketService.leavePollRoom(pollId);
     };
-  }, [pollId, user, getWebSocketToken]);
+  };
+
+  setupSocket();
+}, [pollId]);
 
   const fetchPoll = async () => {
     try {
@@ -131,15 +160,19 @@ export const AnalyticsPage: React.FC = () => {
     try {
       const blob = await analyticsService.exportAnalyticsCSV(pollId!);
       const url = window.URL.createObjectURL(blob);
+
       const a = document.createElement('a');
       a.href = url;
       a.download = `poll_analytics_${pollId}.csv`;
+
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+
       window.URL.revokeObjectURL(url);
       toast.success('CSV exported successfully');
     } catch (error) {
+      console.error(error);
       toast.error('Failed to export CSV');
     }
   };
@@ -154,6 +187,20 @@ export const AnalyticsPage: React.FC = () => {
     navigator.clipboard.writeText(link);
     toast.success('Poll link copied!');
   };
+
+  const getResultsLink = () => {
+  if (!poll) return '';
+  return `${window.location.origin}/results/${poll.shareableLink}`;
+};
+
+const copyResultsLink = () => {
+  navigator.clipboard.writeText(getResultsLink());
+  toast.success('Results link copied!');
+};
+
+
+
+
 
   if (loading) {
     return (
@@ -189,6 +236,7 @@ export const AnalyticsPage: React.FC = () => {
             </div>
             
             <div className="flex space-x-3">
+   
               <button
                 onClick={copyShareableLink}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
@@ -212,6 +260,31 @@ export const AnalyticsPage: React.FC = () => {
               >
                 {publishing ? 'Processing...' : (analytics.poll.isPublished ? 'Unpublish Results' : 'Publish Results')}
               </button>
+
+
+
+{analytics.poll.isPublished && (
+  <a
+    href={getResultsLink()}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+  >
+    View Public Results
+  </a>
+)}
+
+{analytics.poll.isPublished && (
+  <button
+    onClick={copyResultsLink}
+    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+  >
+    Copy Results Link
+  </button>
+)}
+
+
+
             </div>
           </div>
 

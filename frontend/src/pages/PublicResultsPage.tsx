@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { analyticsService } from '../services/analyticsService';
 import toast from 'react-hot-toast';
+import { socketService } from '../services/socketService';
 
 export const PublicResultsPage: React.FC = () => {
   const { shareableLink } = useParams();
@@ -10,10 +11,61 @@ export const PublicResultsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (shareableLink) {
-      fetchResults();
-    }
-  }, [shareableLink]);
+  if (shareableLink) {
+    fetchResults();
+  }
+}, [shareableLink]);
+
+//  useEffect(() => {
+//   const setupSocket = async () => {
+//     if (!results?.poll?._id) return;
+
+//     await socketService.connect();
+
+//     socketService.joinPollRoom(results.poll._id);
+
+//     const handleUpdate = async (data: any) => {
+//       if (data.pollId === results.poll._id) {
+//         await fetchResults();
+//       }
+//     };
+
+//     socketService.on('response-count-update', handleUpdate);
+
+//     return () => {
+//       socketService.off('response-count-update', handleUpdate);
+//       socketService.leavePollRoom(results.poll._id);
+//     };
+//   };
+
+//   setupSocket();
+// }, [results?.poll?._id]);
+
+useEffect(() => {
+  const setupSocket = async () => {
+    if (!results?.poll?.id) return;
+
+    await socketService.connect();
+
+    socketService.joinPollRoom(results.poll.id);
+
+    const handleUpdate = async (data: any) => {
+      if (data.pollId === results.poll.id) {
+        await fetchResults();
+      }
+    };
+
+    socketService.on('response-count-update', handleUpdate);
+
+    return () => {
+      socketService.off('response-count-update', handleUpdate);
+      socketService.leavePollRoom(results.poll.id);
+    };
+  };
+
+  setupSocket();
+}, [results?.poll?.id]);
+
 
   const fetchResults = async () => {
     try {

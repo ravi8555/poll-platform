@@ -67,16 +67,27 @@ export const setupSocketHandlers = (io: SocketServer) => {
 // };
 
 // backend/src/sockets/poll.socket.ts
-export const emitResponseUpdate = (io: SocketServer, pollId: string) => {
-  const roomName = `poll_${pollId}`;
-  console.log(`Emitting response-count-update to room: ${roomName}`);
+export const emitResponseUpdate = async (
+  io: SocketServer, 
+  pollId: string
+) => {
+  const responseCount = await Response.countDocuments({ pollId });
+  io.to(`poll_${pollId}`).emit('response-count-update', {
+    pollId,
+    count: responseCount
+  });
+  io.to(`poll_${pollId}`).emit('analytics-update', {
+    pollId
+  });
+  // const roomName = `poll_${pollId}`;
+  // console.log(`Emitting response-count-update to room: ${roomName}`);
   
   // Emit to the specific room
-  io.to(roomName).emit('response-count-update', { 
-    pollId, 
-    count: 'update', 
-    message: 'New response received'
-  });
+  // io.to(roomName).emit('response-count-update', { 
+  //   pollId, 
+  //   count: 'update', 
+  //   message: 'New response received'
+  // });
   
   // Also emit to all connected clients for debugging
   io.emit('debug-message', { message: 'Response submitted', pollId });

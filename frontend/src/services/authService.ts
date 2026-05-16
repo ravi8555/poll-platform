@@ -32,7 +32,7 @@ export const authService = {
 
   async logout(): Promise<void> {
     await api.post('/auth/logout');
-    localStorage.removeItem('token');
+    // localStorage.removeItem('token');
   },
   
   getToken(): string | null {

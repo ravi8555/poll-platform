@@ -38,7 +38,7 @@ export const Navbar: React.FC = () => {
     socketService.on('connect', handleConnect);
     socketService.on('disconnect', handleDisconnect);
     
-    setSocketConnected(socketService.isConnected());
+    // setSocketConnected(socketService.isConnected());
     
     return () => {
       if (connectCallbackRef.current) {
@@ -55,7 +55,7 @@ export const Navbar: React.FC = () => {
     navigate('/login');
   };
 
-  if (!user) return null;
+  if (!user) {return null};
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">

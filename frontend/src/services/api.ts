@@ -37,9 +37,24 @@ api.interceptors.response.use(
     
     if (error.response?.status === 401) {
       const currentPath = window.location.pathname;
-      if (currentPath !== '/login' && !currentPath.startsWith('/poll/')) {
+      const publicRoutes =[
+        '/',
+        '/login'
+      ]
+
+      const isPublicRoute = 
+      currentPath === '/' ||
+      currentPath === '/login' ||
+      // publicRoutes.includes(currentPath) || 
+      currentPath.startsWith('/poll/') ||
+      currentPath.startsWith('/results/');
+
+      if(!isPublicRoute){
         window.location.href = '/login';
       }
+      // if (currentPath !== '/login' && !currentPath.startsWith('/poll/')) {
+      //   window.location.href = '/login';
+      // }
     }
     return Promise.reject(error);
   }

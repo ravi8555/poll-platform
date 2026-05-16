@@ -74,14 +74,18 @@ export class AnalyticsController {
       // Convert to CSV format
       let csv = 'Question,Option,Votes,Percentage\n';
       
+      
       for (const question of analytics.questions) {
         for (const option of question.options) {
-          csv += `"${question.text}","${option.text}",${option.responseCount},${option.percentage.toFixed(2)}%\n`;
+          // console.log('CSV OPTION:', option);
+          csv += `"${question.text}","${option.text}",${option.votes},${option.percentage.toFixed(2)}%\n`;
         }
       }
       
       res.setHeader('Content-Type', 'text/csv');
+      // res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', `attachment; filename=poll_${pollId}_analytics.csv`);
+      // console.log(csv);
       res.send(csv);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

@@ -29,8 +29,8 @@ export const DashboardPage: React.FC = () => {
         const token = await getWebSocketToken();
         if (token) {
           // Connect socket
-          socketService.connect(token);
-          
+          await socketService.connect(token);
+
           // Join all poll rooms
           polls.forEach(poll => {
             socketService.joinPollRoom(poll._id);
@@ -127,6 +127,7 @@ export const DashboardPage: React.FC = () => {
           >
             Logout
           </button>
+          
         </div>
       </div>
 
@@ -190,6 +191,15 @@ export const DashboardPage: React.FC = () => {
                 >
                   Delete
                 </button>
+                {poll.isPublished && (
+  <a
+    href={`/results/${poll.shareableLink}`}
+    target="_blank"
+    className="flex-1 bg-green-100 text-green-700 px-3 py-1 rounded text-sm text-center hover:bg-green-200"
+  >
+    Results
+  </a>
+)}
               </div>
             </div>
           ))}

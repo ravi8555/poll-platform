@@ -162,12 +162,14 @@ export class ResponseController {
     
     // Get io instance and emit event
     const io = req.app.get('io');
-    if (io) {
-      console.log('Emitting response update for poll:', result.pollId);
-      await emitResponseUpdate(io, result.pollId.toString());
-    } else {
-      console.log('IO not found in app');
-    }
+    emitResponseUpdate(io, result.pollId.toString());
+    
+    // if (io) {
+    //   console.log('Emitting response update for poll:', result.pollId);
+    //   await emitResponseUpdate(io, result.pollId.toString());
+    // } else {
+    //   console.log('IO not found in app');
+    // }
     
     res.status(201).json(result);
     } catch (error: any) {

@@ -21,7 +21,11 @@ export const analyticsService = {
   async exportAnalyticsCSV(pollId: string): Promise<Blob> {
     const response = await api.get(`/analytics/poll/${pollId}/export`, {
       responseType: 'blob',
+    headers: {
+      Accept: 'text/csv',
+    },
+      
     });
-    return response.data;
+    return new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
   }
 };
